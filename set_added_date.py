@@ -65,6 +65,7 @@ def setAddedDate(browser):
         while mw.col.db.scalar("SELECT id FROM cards WHERE id=?", date_milliseconds_card):
             date_milliseconds_card += 1
         mw.col.db.execute("UPDATE cards SET id=? WHERE id=?", date_milliseconds_card, card_id)
+        mw.col.db.execute("UPDATE revlog SET cid=? WHERE cid=?", date_milliseconds_card, card_id)
 
     mw.col.modSchema(check=True)
 
