@@ -1,11 +1,9 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 from aqt import mw
-from aqt.utils import showInfo, showWarning, getText
+from aqt.utils import showWarning, getText
 
 import datetime
-
-debug = False
 
 def getDateFromString(string):
     date = None
@@ -39,8 +37,6 @@ def setAddedDate(browser):
 
     card_ids = browser.selectedCards()
     note_ids = getNoteIDs(card_ids)
-    if debug:
-        showInfo(f"Card IDs: {card_ids}\nNote IDs: {note_ids}")
     
     user_input, succeeded = getText("Enter new added date. Examples of acceptable values are '2020-01-24' or '2019-05-30 12:45:33'.", 
                                     parent=browser, default=datetime.datetime.now().strftime('%Y-%m-%d'))
@@ -51,8 +47,6 @@ def setAddedDate(browser):
     if not user_input_date:
         return
     user_input_date = int(user_input_date.timestamp()) * 1000
-    if debug:
-        showInfo(f"New ID start: {user_input_date}")
 
     for card_id in card_ids:
         if mw.col.db.scalar("SELECT id FROM revlog WHERE cid=? AND id<?", card_id, user_input_date):
