@@ -2,7 +2,7 @@
 from aqt import mw
 from aqt.utils import showInfo, getText
 
-from datetime import datetime
+import datetime
 
 debug = False
 
@@ -11,12 +11,12 @@ def getDateFromString(string):
 
     if not date:
         try:
-            date = datetime.strptime(string, '%Y-%m-%d %H:%M:%S')
+            date = datetime.datetime.strptime(string, '%Y-%m-%d %H:%M:%S')
         except:
             pass
     if not date:
         try:
-            date = datetime.strptime(string, '%Y-%m-%d')
+            date = datetime.datetime.strptime(string, '%Y-%m-%d')
         except:
             pass
     
