@@ -1,6 +1,6 @@
 
 from aqt import mw
-from aqt.utils import showInfo, getText
+from aqt.utils import showInfo, showWarning, getText
 
 import datetime
 
@@ -52,6 +52,11 @@ def setAddedDate(browser):
     user_input_date = int(user_input_date.timestamp()) * 1000
     if debug:
         showInfo(f"New ID start: {user_input_date}")
+
+    for card_id in card_ids:
+        if mw.col.db.scalar("SELECT id FROM revlog WHERE cid=? AND id<?", card_id, user_input_date):
+            showWarning(f"Card with ID '{card_id}' has review(s) before new added date. Aborting...")
+            return
 
     date_milliseconds_note = user_input_date
     for note_id in note_ids:
