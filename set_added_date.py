@@ -53,6 +53,8 @@ def setAddedDate(browser):
             showWarning(f"Card with ID '{card_id}' has review(s) before new added date. Aborting...")
             return
 
+    mw.col.modSchema(check=True)
+
     date_milliseconds_note = user_input_date
     for note_id in note_ids:
         while mw.col.db.scalar("SELECT id FROM notes WHERE id=?", date_milliseconds_note):
@@ -66,7 +68,5 @@ def setAddedDate(browser):
             date_milliseconds_card += 1
         mw.col.db.execute("UPDATE cards SET id=? WHERE id=?", date_milliseconds_card, card_id)
         mw.col.db.execute("UPDATE revlog SET cid=? WHERE cid=?", date_milliseconds_card, card_id)
-
-    mw.col.modSchema(check=True)
 
     mw.reset()
