@@ -75,13 +75,6 @@ def setAddedDate(browser):
         showWarning("Invalid input.")
         return
 
-    for note_id in note_ids:
-        while mw.col.db.scalar("SELECT id FROM notes WHERE id=?", note_id_to_new_date[note_id]):
-            note_id_to_new_date[note_id] += 1
-    for card_id in card_ids:
-        while mw.col.db.scalar("SELECT id FROM cards WHERE id=?", card_id_to_new_date[card_id]):
-            card_id_to_new_date[card_id] += 1
-
     for card_id in card_ids:
         if mw.col.db.scalar("SELECT id FROM revlog WHERE cid=? AND id<?", card_id, card_id_to_new_date[card_id]):
             showWarning(f"Card with ID '{card_id}' has review(s) before new added date. Aborting...")
@@ -90,10 +83,14 @@ def setAddedDate(browser):
     mw.col.modSchema(check=True)
 
     for note_id in note_ids:
+        while mw.col.db.scalar("SELECT id FROM notes WHERE id=?", note_id_to_new_date[note_id]):
+            note_id_to_new_date[note_id] += 1
         mw.col.db.execute("UPDATE notes SET id=? WHERE id=?", note_id_to_new_date[note_id], note_id)
         mw.col.db.execute("UPDATE cards SET nid=? WHERE nid=?", note_id_to_new_date[note_id], note_id)
 
     for card_id in card_ids:
+        while mw.col.db.scalar("SELECT id FROM cards WHERE id=?", card_id_to_new_date[card_id]):
+            card_id_to_new_date[card_id] += 1
         mw.col.db.execute("UPDATE cards SET id=? WHERE id=?", card_id_to_new_date[card_id], card_id)
         mw.col.db.execute("UPDATE revlog SET cid=? WHERE cid=?", card_id_to_new_date[card_id], card_id)
 
