@@ -1,7 +1,7 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 from aqt import mw
-from aqt.utils import showWarning, getText
+from aqt.utils import showWarning, getText, askUser
 
 import datetime
 
@@ -75,9 +75,15 @@ def setAddedDate(browser):
         showWarning("Invalid input.")
         return
 
+    timeline_errors_cid = None
     for card_id in card_ids:
         if mw.col.db.scalar("SELECT id FROM revlog WHERE cid=? AND id<?", card_id, card_id_to_new_date[card_id]):
-            showWarning(f"Card with ID '{card_id}' has review(s) before new added date. Aborting...")
+            timeline_errors_cid = card_id
+            break
+    if timeline_errors_cid:
+        timeline_errors_msg = f"Cards with IDs [{timeline_errors_cid}, ...] have review(s) before new added date. Continue?"
+        timeline_errors_continue = askUser(timeline_errors_msg, defaultno=True, title="Set Added Date Timeline Warning")
+        if timeline_errors_continue == False:
             return
 
     mw.col.modSchema(check=True)
