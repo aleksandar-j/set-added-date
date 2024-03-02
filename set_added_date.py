@@ -93,10 +93,13 @@ def computeNewDatesSet(date, selected_info):
     change_info.nid_to_new_nid = {nid : date for nid in selected_info.nids}
     change_info.cid_to_new_cid = {cid : date for cid in selected_info.cids}
 
+    try: INCREMENT_MS = int(mw.addonManager.getConfig(__name__).get("increment_ms", 1))
+    except ValueError: INCREMENT_MS = 1
+
     for nid in selected_info.nids:
         used_ids = set(change_info.nid_to_new_nid.values()) | set(change_info.cid_to_new_cid.values())
 
-        new_nid = max(used_ids) + 1
+        new_nid = max(used_ids) + INCREMENT_MS
         while isUsedNID(new_nid, used=used_ids) or \
               isUsedRangeCID(new_nid, new_nid+len(selected_info.nid_to_cids[nid]), used=used_ids):
             new_nid += 1
